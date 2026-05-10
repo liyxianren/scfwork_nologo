@@ -1,7 +1,57 @@
 (function () {
+  function normalizeMediaPath(path) {
+    if (!path || /^(https?:)?\/\//.test(path) || path.startsWith('/')) {
+      return path;
+    }
+    if (path.startsWith('assets/project-media/')) {
+      return `../${path}`;
+    }
+    return path;
+  }
+
+  function normalizeDownloadPath(path) {
+    if (!path || /^(https?:)?\/\//.test(path) || path.startsWith('/')) {
+      return path;
+    }
+    if (path.startsWith('标准计划书PDF/')) {
+      return `../${path}`;
+    }
+    return path;
+  }
+
+  function resolveAssetHref(path) {
+    if (!path) return path;
+    if (/^(https?:)?\/\//.test(path) || path.startsWith('/') || path.startsWith('../')) {
+      return path;
+    }
+    return `../${path}`;
+  }
+
+  function normalizeStructuredAssetPaths(value) {
+    if (Array.isArray(value)) {
+      return value.map(normalizeStructuredAssetPaths);
+    }
+
+    if (!value || typeof value !== "object") {
+      return value;
+    }
+
+    const normalized = {};
+    Object.entries(value).forEach(([key, child]) => {
+      if (key === "planPath" && typeof child === "string") {
+        normalized[key] = normalizeDownloadPath(child);
+      } else if (["src", "image", "heroImage"].includes(key) && typeof child === "string") {
+        normalized[key] = normalizeMediaPath(child);
+      } else {
+        normalized[key] = normalizeStructuredAssetPaths(child);
+      }
+    });
+    return normalized;
+  }
+
   const slug = window.PROJECT_SLUG;
-  const project = window.getProjectBySlug ? window.getProjectBySlug(slug) : null;
-  const supplementalDetail = window.PROJECT_DETAIL_CONTENT ? window.PROJECT_DETAIL_CONTENT[slug] : null;
+  const project = window.getProjectBySlug ? normalizeStructuredAssetPaths(window.getProjectBySlug(slug)) : null;
+  const supplementalDetail = window.PROJECT_DETAIL_CONTENT ? normalizeStructuredAssetPaths(window.PROJECT_DETAIL_CONTENT[slug]) : null;
   const richDetailPage = project && (project.detailPage || (supplementalDetail && supplementalDetail.detailPage));
 
   if (!project) {
@@ -45,7 +95,7 @@
       return `<span class="btn btn-outline btn-disabled">计划书整理中</span>`;
     }
 
-    return `<a class="btn btn-primary" href="${encodeURI(`../${project.planPath}`)}" download>下载 PDF 计划书</a>`;
+    return `<a class="btn btn-primary" href="${encodeURI(normalizeDownloadPath(project.planPath))}">下载 PDF 计划书</a>`;
   }
 
   function planSection() {
@@ -127,7 +177,7 @@
       </div>
     `;
 
-  const VISUAL_PLACEHOLDER = "assets/project-media/shared/project-placeholder.svg";
+  const VISUAL_PLACEHOLDER = normalizeMediaPath("assets/project-media/shared/project-placeholder.svg");
 
   function isPdfPreview(src) {
     return /pdf-page-\d+\.(png|jpe?g|webp)$/i.test(src || "");
@@ -277,11 +327,11 @@
         <button
           class="document-preview__frame zoomable-media"
           type="button"
-          data-image-src="${encodeURI(`../${section.image}`)}"
+          data-image-src="${encodeURI(resolveAssetHref(section.image))}"
           data-image-alt="${section.imageAlt || section.title}"
           data-image-caption="${section.imageCaption || section.imageAlt || section.title}"
         >
-          <img src="${encodeURI(`../${section.image}`)}" alt="${section.imageAlt || section.title}" loading="lazy" decoding="async">
+          <img src="${encodeURI(resolveAssetHref(section.image))}" alt="${section.imageAlt || section.title}" loading="lazy" decoding="async">
           <span class="zoom-badge">点击放大</span>
         </button>
         ${
@@ -495,11 +545,11 @@
                   <button
                     class="visual-framework-card__button zoomable-media"
                     type="button"
-                    data-image-src="${encodeURI(`../${item.src}`)}"
+                    data-image-src="${encodeURI(resolveAssetHref(item.src))}"
                     data-image-alt="${item.alt || item.title || project.name}"
                     data-image-caption="${item.caption || item.alt || item.title || project.name}"
                   >
-                    <img src="${encodeURI(`../${item.src}`)}" alt="${item.alt || item.title || project.name}" loading="lazy" decoding="async">
+                    <img src="${encodeURI(resolveAssetHref(item.src))}" alt="${item.alt || item.title || project.name}" loading="lazy" decoding="async">
                     <span class="zoom-badge">点击放大</span>
                   </button>
                   <figcaption>${item.caption || item.title || ""}</figcaption>
@@ -512,14 +562,111 @@
     `;
   }
 
-  function renderRichSection(section) {
-    if (section.type === "insight") return renderInsightSection(section);
-    if (section.type === "schedule") return renderScheduleSection(section);
-    if (section.type === "cards") return renderCardsSection(section);
-    if (section.type === "results") return renderResultsSection(section);
-    if (section.type === "fit") return renderFitSection(section);
-    if (section.type === "faq") return renderFaqSection(section);
-    return "";
+  function renderRichSections(sections) {
+    if (!sections || !sections.length) return "";
+
+    var insight = null;
+    var schedule = null;
+    var results = null;
+    var fit = null;
+    var faq = null;
+
+    sections.forEach(function (s) {
+      if (s.type === "insight" && !insight) insight = s;
+      if (s.type === "schedule" && !schedule) schedule = s;
+      if (s.type === "results" && !results) results = s;
+      if (s.type === "fit" && !fit) fit = s;
+      if (s.type === "faq" && !faq) faq = s;
+    });
+
+    var html = "";
+
+    // Board 1: Overview (insight + results + fit merged)
+    if (insight || results || fit) {
+      var overviewParts = [];
+
+      if (insight) {
+        var paragraphs = (insight.paragraphs || []).map(function (p) { return "<p>" + p + "</p>"; }).join("");
+        var bullets = (insight.bullets || []).length
+          ? '<ul class="detail-highlight">' + insight.bullets.map(function (b) { return "<li>" + b + "</li>"; }).join("") + "</ul>"
+          : "";
+        overviewParts.push(paragraphs + bullets);
+      }
+
+      if (results) {
+        var resultsHtml = '<div class="overview-results-grid">' +
+          (results.cards || []).map(function (c) {
+            return '<div class="overview-result-item"><strong>' + c.title + '</strong><span>' + c.text + '</span></div>';
+          }).join("") + "</div>";
+        overviewParts.push('<h3 class="overview-sub">' + results.title + '</h3>' + resultsHtml);
+      }
+
+      if (fit) {
+        var goodFitHtml = (fit.goodFit || []).map(function (f) { return '<span class="overview-fit-tag overview-fit-tag--good">' + f + '</span>'; }).join("");
+        var notFitHtml = (fit.notFit || []).map(function (f) { return '<span class="overview-fit-tag overview-fit-tag--muted">' + f + '</span>'; }).join("");
+        overviewParts.push(
+          '<h3 class="overview-sub">适合人群</h3>' +
+          '<div class="overview-fit">' +
+            '<div class="overview-fit-group"><span class="overview-fit-label">适合</span>' + goodFitHtml + '</div>' +
+            (notFitHtml ? '<div class="overview-fit-group"><span class="overview-fit-label overview-fit-label--muted">不太适合</span>' + notFitHtml + '</div>' : '') +
+          '</div>'
+        );
+      }
+
+      html += '<article class="section-card section-card--rich">' +
+        '<div class="rich-section__head">' +
+          '<p class="eyebrow eyebrow--dark">Overview</p>' +
+          '<h2>' + (insight ? insight.title : '项目概览') + '</h2>' +
+        '</div>' +
+        '<div class="rich-copy">' + overviewParts.join("") + '</div>' +
+      '</article>';
+    }
+
+    // Board 2: Schedule (compact)
+    if (schedule && schedule.days && schedule.days.length) {
+      html += '<article class="section-card section-card--rich">' +
+        '<div class="rich-section__head">' +
+          '<p class="eyebrow eyebrow--dark">Schedule</p>' +
+          '<h2>' + schedule.title + '</h2>' +
+        '</div>' +
+        '<div class="schedule-compact">' +
+          schedule.days.map(function (d) {
+            return '<div class="schedule-compact__item">' +
+              '<span class="schedule-compact__day">' + d.day + '</span>' +
+              '<div class="schedule-compact__content">' +
+                '<strong>' + d.title + '</strong>' +
+                '<span>' + d.output + '</span>' +
+              '</div>' +
+            '</div>';
+          }).join("") +
+        '</div>' +
+      '</article>';
+    }
+
+    // Board 3: FAQ (accordion)
+    if (faq && faq.items && faq.items.length) {
+      html += '<article class="section-card section-card--rich">' +
+        '<div class="rich-section__head">' +
+          '<p class="eyebrow eyebrow--dark">FAQ</p>' +
+          '<h2>' + faq.title + '</h2>' +
+        '</div>' +
+        '<div class="faq-accordion">' +
+          faq.items.map(function (item, idx) {
+            return '<div class="faq-accordion__item">' +
+              '<button class="faq-accordion__toggle" type="button" data-faq-idx="' + idx + '">' +
+                '<span>' + item.q + '</span>' +
+                '<span class="faq-accordion__arrow">+</span>' +
+              '</button>' +
+              '<div class="faq-accordion__body" data-faq-body="' + idx + '">' +
+                '<p>' + item.a + '</p>' +
+              '</div>' +
+            '</div>';
+          }).join("") +
+        '</div>' +
+      '</article>';
+    }
+
+    return html;
   }
 
   function renderGallery(detailPage) {
@@ -539,11 +686,11 @@
                   <button
                     class="gallery-card__button zoomable-media"
                     type="button"
-                    data-image-src="${encodeURI(`../${item.src}`)}"
+                    data-image-src="${encodeURI(resolveAssetHref(item.src))}"
                     data-image-alt="${item.alt || item.caption}"
                     data-image-caption="${item.caption || item.alt || ""}"
                   >
-                    <img src="${encodeURI(`../${item.src}`)}" alt="${item.alt || item.caption}" loading="lazy" decoding="async">
+                    <img src="${encodeURI(resolveAssetHref(item.src))}" alt="${item.alt || item.caption}" loading="lazy" decoding="async">
                     <span class="zoom-badge">点击放大</span>
                   </button>
                   <figcaption>${item.caption}</figcaption>
@@ -565,11 +712,11 @@
           <button
             class="gallery-card__button zoomable-media"
             type="button"
-            data-image-src="${encodeURI(`../${detailPage.heroImage}`)}"
+            data-image-src="${encodeURI(resolveAssetHref(detailPage.heroImage))}"
             data-image-alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}"
             data-image-caption="${detailPage.heroCaption || project.name}"
           >
-            <img src="${encodeURI(`../${detailPage.heroImage}`)}" alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}" loading="eager" fetchpriority="high" decoding="async">
+            <img src="${encodeURI(resolveAssetHref(detailPage.heroImage))}" alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}" loading="eager" fetchpriority="high" decoding="async">
             <span class="zoom-badge">点击放大</span>
           </button>
           ${detailPage.heroCaption ? `<span>${detailPage.heroCaption}</span>` : ""}
@@ -583,11 +730,11 @@
           <button
             class="gallery-card__button zoomable-media"
             type="button"
-            data-image-src="${encodeURI(`../${detailPage.heroImage}`)}"
+            data-image-src="${encodeURI(resolveAssetHref(detailPage.heroImage))}"
             data-image-alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}"
             data-image-caption="${detailPage.heroCaption || project.name}"
           >
-            <img src="${encodeURI(`../${detailPage.heroImage}`)}" alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}" loading="eager" fetchpriority="high" decoding="async">
+            <img src="${encodeURI(resolveAssetHref(detailPage.heroImage))}" alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}" loading="eager" fetchpriority="high" decoding="async">
             <span class="zoom-badge">点击放大</span>
           </button>
           ${detailPage.heroCaption ? `<span>${detailPage.heroCaption}</span>` : ""}
@@ -597,7 +744,7 @@
 
     return `
       <div class="media-card media-card--hero">
-        <img src="${encodeURI(`../${detailPage.heroImage}`)}" alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}" loading="eager" fetchpriority="high" decoding="async">
+        <img src="${encodeURI(resolveAssetHref(detailPage.heroImage))}" alt="${detailPage.heroAlt || detailPage.heroCaption || project.name}" loading="eager" fetchpriority="high" decoding="async">
         ${detailPage.heroCaption ? `<span>${detailPage.heroCaption}</span>` : ""}
       </div>
     `;
@@ -608,8 +755,9 @@
       <div class="site-shell">
         <header class="topbar-detail">
           <a class="brand" href="../index.html">
-                        <span class="brand-text">
-              <strong>Project Catalog</strong>
+            <span class="brand-mark">SP</span>
+            <span class="brand-text">
+              <strong>Summer Project Studio</strong>
               <small>返回项目首页</small>
             </span>
           </a>
@@ -649,7 +797,7 @@
 
         <section class="detail-layout detail-layout--feature">
           <div class="detail-main detail-main--rich">
-            ${(detailPage.sections || []).map(renderRichSection).join("")}
+            ${renderRichSections(detailPage.sections)}
 
             <article class="section-card section-card--rich">
               <div class="rich-section__head">
@@ -762,9 +910,25 @@
     });
   }
 
+  function bindFaqAccordion() {
+    var root = document.getElementById("projectDetailApp");
+    if (!root) return;
+    root.addEventListener("click", function (event) {
+      var toggle = event.target.closest(".faq-accordion__toggle");
+      if (!toggle) return;
+      var idx = toggle.dataset.faqIdx;
+      var body = root.querySelector('[data-faq-body="' + idx + '"]');
+      if (!body) return;
+      var isOpen = body.classList.contains("is-open");
+      body.classList.toggle("is-open");
+      toggle.querySelector(".faq-accordion__arrow").textContent = isOpen ? "+" : "-";
+    });
+  }
+
   if (richDetailPage) {
     document.getElementById("projectDetailApp").innerHTML = renderRichDetailPage(richDetailPage);
     bindImageLightbox();
+    bindFaqAccordion();
     return;
   }
 
@@ -772,8 +936,9 @@
     <div class="site-shell">
       <header class="topbar-detail">
         <a class="brand" href="../index.html">
-                    <span class="brand-text">
-            <strong>Project Catalog</strong>
+          <span class="brand-mark">SP</span>
+          <span class="brand-text">
+            <strong>Summer Project Studio</strong>
             <small>返回项目首页</small>
           </span>
         </a>

@@ -1,9 +1,30 @@
 (function () {
+  function normalizeMediaPath(path) {
+    if (!path || /^(https?:)?\/\//.test(path) || path.startsWith('/')) {
+      return path;
+    }
+    if (path.startsWith('assets/project-media/')) {
+      return path;
+    }
+    return path;
+  }
+
+  function normalizeDownloadPath(path) {
+    if (!path || /^(https?:)?\/\//.test(path) || path.startsWith('/')) {
+      return path;
+    }
+    if (path.startsWith('标准计划书PDF/')) {
+      return path;
+    }
+    return path;
+  }
+
   const projects = window.SUMMER_PROJECTS || [];
   const state = {
     type: "全部",
     subject: "全部",
-    grade: "全部"
+    grade: "全部",
+    viewMode: localStorage.getItem("catalog_view_mode") || "simple"
   };
 
   const typeOptions = ["全部", "纯软", "软硬"];
@@ -18,6 +39,7 @@
     "心理学",
     "应用数学",
     "统计学",
+    "数学建模",
     "应用物理",
     "教育学",
     "通信工程",
@@ -27,12 +49,23 @@
     "环境/环保/生态",
     "生物/化学"
   ];
+  const discoveredSubjects = Array.from(
+    new Set(projects.flatMap((project) => project.subjects || []))
+  );
   const subjectOptions = ["全部"].concat(
-    subjectCatalog.filter((subject) =>
-      projects.some((project) => (project.subjects || []).includes(subject))
+    subjectCatalog.filter((subject) => discoveredSubjects.includes(subject)).concat(
+      discoveredSubjects.filter((subject) => !subjectCatalog.includes(subject))
     )
   );
-  const gradeOptions = ["全部", "5-8", "9-11"];
+  const preferredGradeOrder = ["5-8", "7-10", "7-11", "8-11", "9-11"];
+  const discoveredGrades = Array.from(
+    new Set(projects.map((project) => project.grade).filter(Boolean))
+  );
+  const gradeOptions = ["全部"].concat(
+    preferredGradeOrder.filter((grade) => discoveredGrades.includes(grade)).concat(
+      discoveredGrades.filter((grade) => !preferredGradeOrder.includes(grade)).sort()
+    )
+  );
 
   const typeContainer = document.getElementById("typeFilters");
   const subjectContainer = document.getElementById("subjectFilters");
@@ -69,26 +102,44 @@
       return `<span class="btn btn-outline btn-disabled">资料整理中</span>`;
     }
 
-    return `<a class="btn btn-outline" href="${encodeURI(project.planPath)}" download>下载 PDF</a>`;
+    return `<a class="btn btn-outline" href="${encodeURI(normalizeDownloadPath(project.planPath))}">下载 PDF</a>`;
   }
 
   function scheduleBlock(project) {
     if (!project.sessions || !project.sessions.length) return "";
     return `
       <div class="project-card__schedule">
-        <span>开课时间</span>
-        <div class="project-card__sessions">
+        <div class="project-card__schedule-title">开课时间 / 报名</div>
           ${project.sessions
             .map(
-              (session) => `
+              (session) => {
+                const enrolled = session.enrolled != null ? session.enrolled : 0;
+                const seats = session.seats != null ? session.seats : project.seats || 5;
+                const pct = seats > 0 ? Math.round((enrolled / seats) * 100) : 0;
+                const remaining = seats - enrolled;
+                let statusText, statusClass;
+                if (enrolled >= seats) {
+                  statusText = "已成班";
+                  statusClass = "enroll--full";
+                } else if (remaining <= 2) {
+                  statusText = "仅剩 " + remaining + " 席";
+                  statusClass = "enroll--last";
+                } else {
+                  statusText = "招生中";
+                  statusClass = "enroll--open";
+                }
+                return `
                 <div class="project-card__session">
-                  <em>${session.label}</em>
                   <strong>${session.date}</strong>
+                  <div class="enroll-bar">
+                    <div class="enroll-bar__fill ${statusClass}" style="width:${pct}%"></div>
+                  </div>
+                  <span class="enroll-status ${statusClass}">${statusText}</span>
                 </div>
-              `
+              `;
+              }
             )
             .join("")}
-        </div>
       </div>
     `;
   }
@@ -101,33 +152,76 @@
     return project.durationMetaLabel || "天数";
   }
 
-  function renderProjects() {
-    const filtered = getFilteredProjects();
-    const hasFilter =
-      state.type !== "全部" || state.subject !== "全部" || state.grade !== "全部";
+  function renderListItem(project) {
+    const subjects = project.subjects || [];
+    const maxTags = 3;
+    const visibleTags = subjects.slice(0, maxTags);
+    const extraCount = subjects.length - maxTags;
 
-    summaryEl.textContent = hasFilter
-      ? "已按当前条件筛选项目。可以继续调整项目类型、学科方向和适合年级。"
-      : "可按项目类型、学科方向和适合年级快速筛选。";
+    const tagsHtml = visibleTags
+      .map((s) => `<span class="project-list-item__tag">${s}</span>`)
+      .join("") +
+      (extraCount > 0 ? `<span class="project-list-item__tag project-list-item__tag--more">+${extraCount}</span>` : "");
 
-    if (!filtered.length) {
-      gridEl.innerHTML = `
-        <div class="empty-state">
-          <h3>当前条件下没有匹配项目</h3>
-          <p>可以先切回“全部”，再重新组合筛选条件查看。</p>
+    const scheduleHtml = (project.sessions || [])
+      .map((s) => {
+        const enrolled = s.enrolled != null ? s.enrolled : 0;
+        const seats = s.seats != null ? s.seats : project.seats || 5;
+        const remaining = seats - enrolled;
+        let statusText, statusClass;
+        if (enrolled >= seats) {
+          statusText = "已成班";
+          statusClass = "enroll--full";
+        } else if (remaining <= 2) {
+          statusText = "仅剩 " + remaining + " 席";
+          statusClass = "enroll--last";
+        } else {
+          statusText = "招生中";
+          statusClass = "enroll--open";
+        }
+        return `<span class="list-enroll ${statusClass}">${s.date} · <strong>${statusText}</strong></span>`;
+      })
+      .join("<br>");
+
+    return `
+      <a class="project-list-item project-list-item--${project.type}" href="projects/${project.slug}.html" target="_top">
+        <div class="project-list-item__main">
+          <div class="project-list-item__name">
+            <span class="project-list-item__type">${project.type}</span>
+            ${project.name}
+          </div>
+          <div class="project-list-item__desc">${project.summary}</div>
         </div>
-      `;
-      return;
-    }
+        <div class="project-list-item__tags">${tagsHtml}</div>
+        <div class="project-list-item__schedule">${scheduleHtml || "待定"}</div>
+        <div class="project-list-item__grade">${project.grade}</div>
+      </a>
+    `;
+  }
 
+  function renderListView(filtered) {
+    gridEl.className = "project-list";
+    gridEl.innerHTML =
+      `<div class="project-list-header">
+        <span>项目</span>
+        <span>学科标签</span>
+        <span>开课时间 / 报名</span>
+        <span>年级</span>
+      </div>` +
+      filtered.map(renderListItem).join("");
+  }
+
+  function renderCardView(filtered) {
+    gridEl.className = "project-grid";
     gridEl.innerHTML = filtered
       .map(
         (project) => {
-          const posterPath = `assets/project-media/${project.slug}/poster.jpg`;
+          const posterPath = normalizeMediaPath(project.posterPath || `assets/project-media/${project.slug}/poster.jpg`);
+          const fallbackPosterPath = normalizeMediaPath('assets/project-media/shared/project-placeholder.svg');
           return `
           <article class="project-card project-card--${project.type}">
-            <a class="project-card__poster" href="projects/${project.slug}.html" aria-label="查看 ${project.name} 详情">
-              <img src="${encodeURI(posterPath)}" alt="${project.name} 项目海报" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='assets/project-media/shared/project-placeholder.svg';">
+            <a class="project-card__poster" href="projects/${project.slug}.html" target="_top" aria-label="查看 ${project.name} 详情">
+              <img src="${encodeURI(posterPath)}" alt="${project.name} 项目海报" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${fallbackPosterPath}';">
             </a>
             <div class="project-card__top">
               <span class="project-type">${project.type}</span>
@@ -153,7 +247,7 @@
               <div><span>基础要求</span><strong>${project.requirement}</strong></div>
             </div>
             <div class="project-card__actions">
-              <a class="btn btn-primary" href="projects/${project.slug}.html">查看详情</a>
+              <a class="btn btn-primary" href="projects/${project.slug}.html" target="_top">查看详情</a>
               ${planButton(project)}
             </div>
           </article>
@@ -161,6 +255,54 @@
         }
       )
       .join("");
+  }
+
+  function renderProjects() {
+    const filtered = getFilteredProjects();
+    const hasFilter =
+      state.type !== "全部" || state.subject !== "全部" || state.grade !== "全部";
+
+    summaryEl.textContent = hasFilter
+      ? "已按当前条件筛选项目。可以继续调整项目类型、学科方向和适合年级。"
+      : "可按项目类型、学科方向和适合年级快速筛选。";
+
+    if (!filtered.length) {
+      gridEl.className = state.viewMode === "simple" ? "project-list" : "project-grid";
+      gridEl.innerHTML = `
+        <div class="empty-state">
+          <h3>当前条件下没有匹配项目</h3>
+          <p>可以先切回"全部"，再重新组合筛选条件查看。</p>
+        </div>
+      `;
+      return;
+    }
+
+    if (state.viewMode === "simple") {
+      renderListView(filtered);
+    } else {
+      renderCardView(filtered);
+    }
+  }
+
+  function syncViewToggle() {
+    var toggleEl = document.getElementById("viewToggle");
+    if (!toggleEl) return;
+    toggleEl.querySelectorAll(".view-btn").forEach(function (btn) {
+      btn.classList.toggle("is-active", btn.dataset.view === state.viewMode);
+    });
+  }
+
+  function bindViewToggle() {
+    var toggleEl = document.getElementById("viewToggle");
+    if (!toggleEl) return;
+    toggleEl.addEventListener("click", function (event) {
+      var btn = event.target.closest(".view-btn");
+      if (!btn || btn.dataset.view === state.viewMode) return;
+      state.viewMode = btn.dataset.view;
+      localStorage.setItem("catalog_view_mode", state.viewMode);
+      syncViewToggle();
+      renderProjects();
+    });
   }
 
   function syncFilters() {
@@ -184,6 +326,8 @@
   }
 
   syncFilters();
+  syncViewToggle();
   renderProjects();
   bindFilterEvents();
+  bindViewToggle();
 })();

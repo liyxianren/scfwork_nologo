@@ -469,24 +469,6 @@ window.SUMMER_PROJECTS = [
     planPath: "标准计划书PDF/舌像检测.pdf"
   },
   {
-    slug: "gut-acoustic-ai",
-    name: "肠道声学信号",
-    type: "纯软",
-    category: "AI生物医学",
-    subjects: ["计算机", "人工智能", "生物医学", "应用物理"],
-    grade: "9-11",
-    direction: "AI声音生物医学",
-    seats: 5,
-    days: 5,
-    requirement: "建议对声音与健康方向感兴趣",
-    status: "计划书已上传",
-    summary: "通过声音信号分析构建胃肠道辅助判断项目，让学生体验 AI 声学与医疗方向的交叉实践。",
-    intro: "项目强调从音频到可视化结果的转化过程，适合想接触非图像类 AI 任务的学生。",
-    focus: ["音频采集与声学信号理解", "AI 声学分析思维", "Web 端结果展示"],
-    outcomes: ["完成声学分析方向展示项目", "了解音频类 AI 基本流程", "形成跨学科项目表达能力"],
-    planPath: "标准计划书PDF/肠道声学信号.pdf"
-  },
-  {
     slug: "smart-pet-walker",
     name: "智能行宠",
     type: "软硬",
@@ -559,24 +541,6 @@ window.SUMMER_PROJECTS = [
     planPath: "标准计划书PDF/帕金森手环.pdf"
   },
   {
-    slug: "upper-limb-exoskeleton",
-    name: "上肢外骨骼",
-    type: "软硬",
-    category: "智能辅助与健康",
-    subjects: ["机械工程", "电子工程", "生物医学", "计算机"],
-    grade: "9-11",
-    direction: "机械电子生物医学",
-    seats: 4,
-    days: 5,
-    requirement: "适合愿意动手和理解结构的学生",
-    status: "计划书已上传",
-    summary: "围绕助力与康复场景展开的结构型项目，兼具机械设计、电控理解和人机适配思维。",
-    intro: "项目的重点是让学生知道，机器人并不只是在地上跑，也可以直接服务于身体能力增强与康复辅助。",
-    focus: ["机械结构与关节设计", "助力装置控制逻辑", "生物医学应用场景理解"],
-    outcomes: ["完成外骨骼方向项目说明", "理解机电结构与身体场景结合", "建立更强的工程综合意识"],
-    planPath: "标准计划书PDF/上肢外骨骼.pdf"
-  },
-  {
     slug: "micro-wind-power",
     name: "微风发电",
     type: "软硬",
@@ -611,24 +575,6 @@ window.SUMMER_PROJECTS = [
     focus: ["无障碍产品设计", "摄像头与语音交互链路", "嵌入式设备的云端协作"],
     outcomes: ["完成辅助设备类项目表达", "理解图像到语音反馈流程", "提升社会场景洞察能力"],
     planPath: "标准计划书PDF/AI智眼.pdf"
-  },
-  {
-    slug: "humanoid-robot",
-    name: "人型机器人",
-    type: "软硬",
-    category: "机器人与嵌入式",
-    subjects: ["机械工程", "电子工程", "计算机", "人工智能"],
-    grade: "9-11",
-    direction: "机器人综合",
-    seats: 5,
-    days: 5,
-    requirement: "适合对机器人综合方向感兴趣的学生",
-    status: "资料整理中",
-    summary: "围绕人型机构、动作表达与综合控制能力展开的机器人主题项目。",
-    intro: "当前详情页先作为子链接占位，后续补入正式计划书和课程大纲后，可直接升级为完整对外介绍页。",
-    focus: ["机器人综合结构理解", "动作设计与系统表达", "项目展示与概念验证"],
-    outcomes: ["形成机器人综合方向页面", "后续可补完整计划书与课时安排", "预留正式对外展示入口"],
-    planPath: null
   },
   {
     slug: "smart-planter",
@@ -683,97 +629,121 @@ window.SUMMER_PROJECTS = [
     focus: ["四足结构与基础动作系统", "语音互动、灯光和表情反馈", "宠物角色化展示与软硬结合表达"],
     outcomes: ["下载标准版 PDF 计划书", "查看 AI 宠物狗项目简介与展示方向", "后续可继续补二维码和配图素材"],
     planPath: "标准计划书PDF/智能桌宠.pdf"
+  },
+  {
+    slug: "smart-inventory",
+    name: "库灵通 - 智能库存补货",
+    type: "纯软",
+    category: "数学建模",
+    subjects: ["计算机", "人工智能", "应用数学", "统计学", "数学建模", "经济/金融/商业"],
+    grade: "8-11",
+    direction: "数据驱动零售决策",
+    seats: 5,
+    days: 5,
+    requirement: "零基础可参加",
+    status: "计划书已上传",
+    summary: "面向社区便利店的多品类商品销量预测与智能补货系统，基于机器学习实现精准库存管理。",
+    intro: "针对传统便利店依赖人工经验采购导致的库存积压与缺货痛点，构建端到端智能化解决方案。系统融合历史销售、天气、节假日等多维特征，通过 XGBoost 与 Prophet 模型实现销量精准预测，并生成科学补货建议。",
+    focus: ["多因子特征融合与预测建模", "动态安全库存算法设计", "Flask 可视化管理平台搭建"],
+    outcomes: ["完整的销量预测与补货系统原型", "掌握时间序列分析与机器学习实战", "建立数据驱动决策的商业思维"],
+    planPath: "标准计划书PDF/库灵通.pdf"
+  },
+  {
+    slug: "ghost-game-gan",
+    name: "幽灵博弈 - AI量化交易",
+    type: "纯软",
+    category: "数学建模",
+    subjects: ["计算机", "人工智能", "应用数学", "统计学", "数学建模", "经济/金融/商业"],
+    grade: "8-11",
+    direction: "GAN量化交易策略",
+    seats: 5,
+    days: 5,
+    requirement: "零基础可参加",
+    status: "计划书已上传",
+    summary: "基于生成对抗网络的自适应智能交易算法，通过对抗训练锻造高鲁棒性量化交易策略。",
+    intro: "将交易环境建模为生成器与判别器的激烈博弈：生成器创造逼近真实市场规律的模拟数据，判别器竭力分辨数据真伪。通过高强度对抗训练，系统锻造出对市场结构突变具有极高鲁棒性的自适应交易策略。",
+    focus: ["GAN 对抗训练与模型鲁棒性", "金融时间序列数据增强", "动态博弈过程可视化"],
+    outcomes: ["核心量化交易算法原型", "掌握 GAN 在非标准数据上的调参技巧", "全栈可视化交互平台"],
+    planPath: "标准计划书PDF/幽灵博弈.pdf"
   }
 ];
 
 const PROJECT_SCHEDULES = {
   "vibe-coding-advanced": [
-    { label: "7月班", date: "7月6日-7月10日" },
-    { label: "8月班", date: "8月3日-8月7日" }
+    { label: "7月班", date: "7月6日-7月10日", enrolled: 3, seats: 6 },
+    { label: "8月班", date: "8月3日-8月7日", enrolled: 1, seats: 6 }
   ],
   "vibe-coding-starter": [
-    { label: "7月班", date: "7月13日-7月17日" },
-    { label: "8月班", date: "8月10日-8月14日" }
+    { label: "7月班", date: "7月13日-7月17日", enrolled: 2, seats: 6 },
+    { label: "8月班", date: "8月10日-8月14日", enrolled: 0, seats: 6 }
   ],
   "openclaw-camp": [
-    { label: "7月班", date: "7月20日-7月24日" },
-    { label: "8月班", date: "8月17日-8月21日" }
+    { label: "7月班", date: "7月20日-7月24日", enrolled: 5, seats: 6 },
+    { label: "8月班", date: "8月17日-8月21日", enrolled: 4, seats: 6 }
   ],
   "emotion-early-intervention": [
-    { label: "7月班", date: "7月27日-7月31日" },
-    { label: "8月班", date: "8月24日-8月28日" }
+    { label: "7月班", date: "7月27日-7月31日", enrolled: 4, seats: 5 },
+    { label: "8月班", date: "8月24日-8月28日", enrolled: 3, seats: 5 }
   ],
   "tongue-diagnosis-ai": [
-    { label: "7月班", date: "7月6日-7月10日" },
-    { label: "8月班", date: "8月3日-8月7日" }
-  ],
-  "gut-acoustic-ai": [
-    { label: "7月班", date: "7月13日-7月17日" },
-    { label: "8月班", date: "8月10日-8月14日" }
+    { label: "7月班", date: "7月6日-7月10日", enrolled: 4, seats: 5 },
+    { label: "8月班", date: "8月3日-8月7日", enrolled: 3, seats: 5 }
   ],
   "smart-pet-walker": [
-    { label: "7月班", date: "7月20日-7月24日" },
-    { label: "8月班", date: "8月17日-8月21日" }
+    { label: "7月班", date: "7月20日-7月24日", enrolled: 2, seats: 5 },
+    { label: "8月班", date: "8月17日-8月21日", enrolled: 1, seats: 5 }
   ],
   "shade-cloud": [
-    { label: "7月班", date: "7月27日-7月31日" },
-    { label: "8月班", date: "8月24日-8月28日" }
+    { label: "7月班", date: "7月27日-7月31日", enrolled: 3, seats: 5 },
+    { label: "8月班", date: "8月24日-8月28日", enrolled: 2, seats: 5 }
   ],
   "memory-guardian": [
-    { label: "7月班", date: "7月6日-7月10日" },
-    { label: "8月班", date: "8月3日-8月7日" }
+    { label: "7月班", date: "7月6日-7月10日", enrolled: 2, seats: 5 },
+    { label: "8月班", date: "8月3日-8月7日", enrolled: 1, seats: 5 }
   ],
   "parkinson-band": [
-    { label: "7月班", date: "7月13日-7月17日" },
-    { label: "8月班", date: "8月10日-8月14日" }
-  ],
-  "upper-limb-exoskeleton": [
-    { label: "7月班", date: "7月20日-7月24日" },
-    { label: "8月班", date: "8月17日-8月21日" }
+    { label: "7月班", date: "7月13日-7月17日", enrolled: 4, seats: 5 },
+    { label: "8月班", date: "8月10日-8月14日", enrolled: 3, seats: 5 }
   ],
   "micro-wind-power": [
-    { label: "7月班", date: "7月27日-7月31日" },
-    { label: "8月班", date: "8月24日-8月28日" }
+    { label: "7月班", date: "7月27日-7月31日", enrolled: 1, seats: 5 },
+    { label: "8月班", date: "8月24日-8月28日", enrolled: 0, seats: 5 }
   ],
   "ai-vision-eye": [
-    { label: "7月班", date: "7月6日-7月10日" },
-    { label: "8月班", date: "8月3日-8月7日" }
-  ],
-  "humanoid-robot": [
-    { label: "7月班", date: "7月13日-7月17日" },
-    { label: "8月班", date: "8月10日-8月14日" }
+    { label: "7月班", date: "7月6日-7月10日", enrolled: 4, seats: 5 },
+    { label: "8月班", date: "8月3日-8月7日", enrolled: 4, seats: 5 }
   ],
   "smart-planter": [
-    { label: "7月班", date: "7月20日-7月24日" },
-    { label: "8月班", date: "8月17日-8月21日" }
+    { label: "7月班", date: "7月20日-7月24日", enrolled: 3, seats: 5 },
+    { label: "8月班", date: "8月17日-8月21日", enrolled: 1, seats: 5 }
   ],
   "smart-pillbox": [
-    { label: "7月班", date: "7月27日-7月31日" },
-    { label: "8月班", date: "8月24日-8月28日" }
+    { label: "7月班", date: "7月27日-7月31日", enrolled: 4, seats: 5 },
+    { label: "8月班", date: "8月24日-8月28日", enrolled: 3, seats: 5 }
   ],
   "desktop-pet": [
-    { label: "一期", date: "6月15日-6月19日" },
-    { label: "二期", date: "6月29日-7月3日" }
+    { label: "一期", date: "6月15日-6月19日", enrolled: 3, seats: 5 },
+    { label: "二期", date: "6月29日-7月3日", enrolled: 2, seats: 5 }
   ],
   "ai-future-player-starter": [
-    { label: "一期", date: "6月15日-6月19日" },
-    { label: "二期", date: "6月29日-7月3日" }
+    { label: "一期", date: "6月15日-6月19日", enrolled: 3, seats: 5 },
+    { label: "二期", date: "6月29日-7月3日", enrolled: 1, seats: 5 }
   ],
   "single-leg-exoskeleton": [
-    { label: "一期", date: "6月15日-6月19日" },
-    { label: "二期", date: "6月29日-7月3日" }
-  ],
-  "global-interstellar-routing": [
-    { label: "一期", date: "6月15日-6月19日" },
-    { label: "二期", date: "6月29日-7月3日" }
-  ],
-  "economic-cycle-reconstruction": [
-    { label: "一期", date: "6月22日-6月26日" },
-    { label: "二期", date: "7月6日-7月10日" }
+    { label: "一期", date: "6月15日-6月19日", enrolled: 2, seats: 4 },
+    { label: "二期", date: "6月29日-7月3日", enrolled: 1, seats: 4 }
   ],
   "customer-churn-guardian": [
-    { label: "一期", date: "6月15日-6月19日" },
-    { label: "二期", date: "8月初" }
+    { label: "一期", date: "6月15日-6月19日", enrolled: 0, seats: 1 },
+    { label: "二期", date: "8月初", enrolled: 0, seats: 1 }
+  ],
+  "smart-inventory": [
+    { label: "一期", date: "6月22日-6月26日", enrolled: 5, seats: 5 },
+    { label: "二期", date: "7月13日-7月17日", enrolled: 5, seats: 5 }
+  ],
+  "ghost-game-gan": [
+    { label: "一期", date: "6月29日-7月3日", enrolled: 3, seats: 5 },
+    { label: "二期", date: "7月20日-7月24日", enrolled: 2, seats: 5 }
   ]
 };
 
@@ -815,44 +785,8 @@ const UPCOMING_PLACEHOLDER_PROJECTS = [
     planPath: "标准计划书PDF/单腿机械外骨骼.pdf"
   },
   {
-    slug: "global-interstellar-routing",
-    name: "全球星间路由优化系统",
-    type: "纯软",
-    category: "系统建模",
-    subjects: ["应用数学", "计算机", "航空航天工程", "运筹学"],
-    grade: "9-11",
-    direction: "图论数学建模航天",
-    seats: 5,
-    days: 5,
-    requirement: "建议具备基础逻辑与建模兴趣",
-    status: "计划书已上传",
-    summary: "围绕低轨卫星网络与动态图论展开的系统建模项目，把复杂路由问题做成可运行、可展示的航天网络仿真系统。",
-    intro: "项目结合图论建模、后端计算和三维可视化，适合希望做出高辨识度系统类作品的学生。",
-    focus: ["动态图论与时间扩展图", "Flask 后端与路径求解", "Cesium 三维可视化展示"],
-    outcomes: ["完成星间路由仿真系统", "理解航天网络建模思路", "形成项目说明文档"],
-    planPath: "标准计划书PDF/全球星间路由优化系统.pdf"
-  },
-  {
-    slug: "economic-cycle-reconstruction",
-    name: "经济周期重构系统",
-    type: "纯软",
-    category: "系统建模",
-    subjects: ["应用数学", "统计学", "计算机", "经济/金融/商业"],
-    grade: "9-11",
-    direction: "数学经济学计算机",
-    seats: 5,
-    days: 5,
-    requirement: "建议对数学与经济建模有兴趣",
-    status: "计划书已上传",
-    summary: "用随机微分方程与状态估计方法重构经济周期，把抽象的宏观波动问题做成可解释的软件系统。",
-    intro: "项目结合数学建模、滤波估计和交互式可视化，适合对应用数学、统计与经济分析交叉方向感兴趣的学生。",
-    focus: ["随机微分方程建模", "卡尔曼滤波与平滑估计", "经济周期可视化表达"],
-    outcomes: ["完成经济周期重构系统", "理解不确定系统建模", "形成项目说明文档"],
-    planPath: "标准计划书PDF/经济周期重构系统.pdf"
-  },
-  {
     slug: "customer-churn-guardian",
-    name: "客脉守望者",
+    name: "客脉守望者 - 客户流失预警",
     type: "纯软",
     category: "系统建模",
     subjects: ["计算机", "人工智能", "统计学", "经济/金融/商业"],

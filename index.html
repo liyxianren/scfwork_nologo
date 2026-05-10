@@ -3,25 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>暑期项目汇总 | School Project Catalog</title>
+  <title>暑期项目汇总 | Summer Project Studio</title>
   <meta name="description" content="暑期项目汇总，支持按项目类型、学科方向和适合年级筛选查看，并下载项目计划书。">
-  <link rel="stylesheet" href="assets/site.css?v=20260401-posterfix">
+  <link rel="stylesheet" href="assets/site.css?v=20260418-poster-fix">
 </head>
 <body class="page-home">
   <div class="site-shell">
     <header class="topbar">
-      <a class="brand" href="index.html"><span class="brand-text">
+      <a class="brand" href="index.html">
+        <span class="brand-text">
           <strong>School Project Catalog</strong>
-          <small>2026</small>
+          <small>2026 暑期项目汇总</small>
         </span>
       </a>
-      <div class="topbar-note">School Project Catalog 2026</div>
+      <div class="topbar-right">
+        <div class="view-toggle" id="viewToggle">
+          <button class="view-btn is-active" data-view="detailed">详细</button>
+          <button class="view-btn" data-view="simple">简洁</button>
+        </div>
+        <span class="topbar-note">School Project Catalog 2026</span>
+      </div>
     </header>
 
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Summer Programs</p>
+          <p class="eyebrow">Summer Projects</p>
           <h1>暑期项目汇总</h1>
           <div class="hero-topic-row">
             <span class="hero-topic">AI 编程</span>
@@ -50,6 +57,42 @@
               <div class="hero-point">支持下载正式 PDF 项目计划书</div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="advisor-panel" id="aiAdvisor">
+        <div class="section-heading advisor-panel__heading">
+          <p class="eyebrow">AI 项目推荐</p>
+          <h2>AI 项目顾问</h2>
+          <p>填写学生年级、兴趣和目标，AI 会基于当前项目库推荐更适合的项目。</p>
+        </div>
+
+        <form class="advisor-form" id="advisorForm">
+          <label>
+            <span>年级</span>
+            <input name="grade" type="text" placeholder="例如：9年级" required>
+          </label>
+          <label>
+            <span>兴趣方向</span>
+            <input name="interests" type="text" placeholder="例如：人工智能、机器人、医学工程" required>
+          </label>
+          <label>
+            <span>当前基础</span>
+            <input name="foundation" type="text" placeholder="例如：有 Python 基础 / 零基础">
+          </label>
+          <label>
+            <span>项目目标</span>
+            <input name="goal" type="text" placeholder="例如：作品集、竞赛、兴趣探索">
+          </label>
+          <label class="advisor-form__wide">
+            <span>时间安排或偏好</span>
+            <textarea name="time" rows="3" placeholder="例如：暑期集中完成，希望偏软件项目"></textarea>
+          </label>
+          <button class="btn btn-primary advisor-form__submit" type="submit">帮我推荐项目</button>
+        </form>
+
+        <div class="advisor-results" id="advisorResults" aria-live="polite">
+          <p>提交后会返回 1–3 个项目推荐卡片，推荐结果只基于当前项目库生成。</p>
         </div>
       </section>
 
@@ -82,16 +125,15 @@
     </main>
 
     <footer class="footer">
-      <p>School Project Catalog 2026</p>
+      <p>暑期项目汇总 · Summer Project Studio</p>
     </footer>
   </div>
 
-  <script src="assets/projects-data.js?v=20260401-posterfix"></script>
-  <script src="assets/home.js?v=20260401-posterfix"></script>
+  <script src="assets/projects-data.js?v=20260419-runtime-config"></script>
+  <script src="assets/home.js?v=20260418-poster-fix"></script>
+  <script src="assets/assistant.js?v=20260426-ai-advisor"></script>
 </body>
 </html>
-
-
 
 
 
