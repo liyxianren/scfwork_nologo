@@ -52,7 +52,11 @@
   const slug = window.PROJECT_SLUG;
   const project = window.getProjectBySlug ? normalizeStructuredAssetPaths(window.getProjectBySlug(slug)) : null;
   const supplementalDetail = window.PROJECT_DETAIL_CONTENT ? normalizeStructuredAssetPaths(window.PROJECT_DETAIL_CONTENT[slug]) : null;
-  const richDetailPage = project && (project.detailPage || (supplementalDetail && supplementalDetail.detailPage));
+  const richDetailPage =
+    project &&
+    (project.detailPage ||
+      project.detail_page ||
+      (supplementalDetail && (supplementalDetail.detailPage || supplementalDetail.detail_page)));
 
   if (!project) {
     document.body.innerHTML = `

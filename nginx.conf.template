@@ -31,4 +31,9 @@ server {
         add_header Cache-Control "public, max-age=3600" always;
         try_files $uri =404;
     }
+
+    location /runtime-course-files/ {
+        add_header Cache-Control "public, max-age=3600" always;
+        try_files $uri =404;
+    }
 }

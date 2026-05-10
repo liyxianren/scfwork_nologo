@@ -7,5 +7,6 @@ COPY index.html /usr/share/nginx/html/index.html
 COPY assets /usr/share/nginx/html/assets
 COPY projects /usr/share/nginx/html/projects
 COPY 标准计划书PDF /usr/share/nginx/html/标准计划书PDF
+COPY runtime-course-files /usr/share/nginx/html/runtime-course-files
 
 EXPOSE 8080
